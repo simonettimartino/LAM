@@ -1,0 +1,73 @@
+package com.example.myhm.ui.main;
+
+import android.content.Context;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+
+import com.example.myhm.Grafici;
+import com.example.myhm.Home;
+import com.example.myhm.MyData;
+import com.example.myhm.NewReport;
+
+/**
+ * A [FragmentPagerAdapter] that returns a fragment corresponding to
+ * one of the sections/tabs/pages.
+ */
+public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+    @StringRes
+    private static final int[] TAB_TITLES = new int[]{0,1,2,4};
+    private final Context mContext;
+
+    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+        super(fm);
+        mContext = context;
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+
+        Fragment fragment = null;
+        switch (position) {
+            case 0:
+                fragment = new MyData();
+                break;
+            case 1:
+                fragment = new Home();
+               // fragment = new Calendario();
+                break;
+            case 2:
+                fragment = new NewReport();
+                break;
+            case 3:
+                fragment = new Grafici();
+                break;
+        }
+        return fragment;
+    }
+
+    @Nullable
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "I MIEI DATI";
+            case 1:
+                return "HOME";
+            case 2:
+                return "NEW REP";
+            case 3:
+                return "GRAFICI";
+        }
+        return null;
+    }
+
+    @Override
+    public int getCount() {
+        // Show 2 total pages.
+        return 4;
+    }
+}
