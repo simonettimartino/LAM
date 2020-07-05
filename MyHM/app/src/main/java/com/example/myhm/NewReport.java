@@ -1,14 +1,150 @@
 package com.example.myhm;
 
+import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class NewReport extends Fragment {
+import java.util.Calendar;
+import java.util.Date;
+
+public class NewReport extends Fragment implements AdapterView.OnItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
+
+    private Spinner spinnerPeso, spinnerTemperatura, spinnerGlicemia;
+    private Button nuovoReport;
+    private EditText peso, temperatura, glicemia, note;
+    private int j, priorita, prioritaPeso, prioritaTemperatura, prioritaGlicemia;
+    private TextView data;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
+
+
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_newreport, container, false);
+
+     View view = inflater.inflate(R.layout.fragment_newreport, container, false);
+
+     ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+             R.array.priority,
+             android.R.layout.simple_spinner_item);
+     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+     nuovoReport = view.findViewById(R.id.buttonInviaR);
+
+     peso = view.findViewById(R.id.datoPeso);
+     temperatura = view.findViewById(R.id.datoTemperatura);
+     glicemia = view.findViewById(R.id.datoGlicemia);
+     note = view.findViewById(R.id.datoNote);
+     data = view.findViewById(R.id.datoData);
+
+     spinnerPeso = view.findViewById(R.id.prioritaPeso);
+     spinnerPeso.setAdapter(adapter);
+     spinnerPeso.setOnItemSelectedListener(this);
+
+     spinnerTemperatura = view.findViewById(R.id.prioritaTemperatura);
+     spinnerTemperatura.setAdapter(adapter);
+     spinnerTemperatura.setOnItemSelectedListener(this);
+
+     spinnerGlicemia = view.findViewById(R.id.prioritaGlicemia);
+     spinnerGlicemia.setAdapter(adapter);
+     spinnerGlicemia.setOnItemSelectedListener(this);
+
+
+            data = (TextView) view.findViewById(R.id.datoData);
+
+            data.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Calendar cal = Calendar.getInstance();
+                    int year = cal.get(Calendar.YEAR);
+                    int month = cal.get(Calendar.MONTH);
+                    int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                    DatePickerDialog dialog = new DatePickerDialog(
+                            getActivity(),
+                            android.R.style.Theme_Holo_Light_Dialog_MinWidth,
+                            mDateSetListener,
+                            year,month,day);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.show();
+                }
+            });
+
+            mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                    month = month + 1;
+                    Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
+
+                    String date = month + "/" + day + "/" + year;
+                    data.setText(date);
+                }
+            };
+
+
+
+        nuovoReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Reports rep = new Reports();
+                if (peso.getText().length() != 0 &&
+                    temperatura.getText().length() != 0 &&
+                    glicemia.getText().length() != 0 &&
+                    data.getText().length() != 0) {
+
+                        rep.setPeso(new Nodo(Double.parseDouble(peso.getText().toString()),Integer.parseInt(spinnerPeso.getSelectedItem().toString())));
+                        rep.setTemperatura(new Nodo(Double.parseDouble(temperatura.getText().toString()),Integer.parseInt(spinnerTemperatura.getSelectedItem().toString())));
+                        rep.setGlicemia(new Nodo(Double.parseDouble(glicemia.getText().toString()),Integer.parseInt(spinnerGlicemia.getSelectedItem().toString())));
+
+                        if (note.getText().length() != 0){rep.setNote(note.getText().toString());}
+
+
+                        peso.setText("");
+                        temperatura.setText("");
+                        glicemia.setText("");
+                        data.setText("");
+                        note.setText("");
+                        spinnerGlicemia.setSelection(0);
+                        spinnerPeso.setSelection(0);
+                        spinnerTemperatura.setSelection(0);
+                } else {
+                    Toast.makeText(view.getContext(), "Inserici tutti i dati!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        }
+
+     );
+
+
+     return view;
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+        String text = adapterView.getItemAtPosition(i).toString();
+        j = Integer.parseInt(text);
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }
