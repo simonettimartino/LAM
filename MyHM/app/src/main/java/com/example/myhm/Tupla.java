@@ -1,10 +1,10 @@
 package com.example.myhm;
 
-public class Nodo {
+public class Tupla {
     double valore;
     int priorità;
 
-    public Nodo(double valore, int priorità){
+    public Tupla(double valore, int priorità){
         this.valore = valore;
         this.priorità = priorità;
     }

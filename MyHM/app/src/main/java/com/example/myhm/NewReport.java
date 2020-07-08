@@ -3,9 +3,10 @@ package com.example.myhm;
 import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Calendar;
-import java.util.Date;
+
 
 public class NewReport extends Fragment implements AdapterView.OnItemSelectedListener {
 
@@ -31,8 +32,8 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
     private EditText peso, temperatura, glicemia, note;
     private int j, priorita, prioritaPeso, prioritaTemperatura, prioritaGlicemia;
     private TextView data;
+    private String date;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
-
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -91,7 +92,7 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
                     month = month + 1;
                     Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
 
-                    String date = month + "/" + day + "/" + year;
+                    date = month + "/" + day + "/" + year;
                     data.setText(date);
                 }
             };
@@ -107,13 +108,15 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
                     glicemia.getText().length() != 0 &&
                     data.getText().length() != 0) {
 
-                        rep.setPeso(new Nodo(Double.parseDouble(peso.getText().toString()),Integer.parseInt(spinnerPeso.getSelectedItem().toString())));
-                        rep.setTemperatura(new Nodo(Double.parseDouble(temperatura.getText().toString()),Integer.parseInt(spinnerTemperatura.getSelectedItem().toString())));
-                        rep.setGlicemia(new Nodo(Double.parseDouble(glicemia.getText().toString()),Integer.parseInt(spinnerGlicemia.getSelectedItem().toString())));
+                        rep.setPeso(new Tupla(Double.parseDouble(peso.getText().toString()),Integer.parseInt(spinnerPeso.getSelectedItem().toString())));
+                        rep.setTemperatura(new Tupla(Double.parseDouble(temperatura.getText().toString()),Integer.parseInt(spinnerTemperatura.getSelectedItem().toString())));
+                        rep.setGlicemia(new Tupla(Double.parseDouble(glicemia.getText().toString()),Integer.parseInt(spinnerGlicemia.getSelectedItem().toString())));
 
                         if (note.getText().length() != 0){rep.setNote(note.getText().toString());}
 
+                        rep.setData(date);
 
+                        new AsyncTaskAggiungiReport().execute(rep);
                         peso.setText("");
                         temperatura.setText("");
                         glicemia.setText("");
@@ -122,8 +125,9 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
                         spinnerGlicemia.setSelection(0);
                         spinnerPeso.setSelection(0);
                         spinnerTemperatura.setSelection(0);
+                       // Toast.makeText(view.getContext(), "Report inserito!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(view.getContext(), "Inserici tutti i dati!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), "Inserici tutti i dati!", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -134,6 +138,24 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
 
      return view;
     }
+
+    public class AsyncTaskAggiungiReport extends AsyncTask<Reports, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Reports... report) {
+            MainActivity.appDatabase.dataAccessObject().aggiungiReport(report[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getActivity(), "Report aggiunto",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

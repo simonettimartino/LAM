@@ -4,23 +4,19 @@ import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
-import java.util.ArrayList;
-import java.util.Date;
-    //setto i valori (tabelle)
-    @Entity(tableName = "Reports")
+    @Entity(tableName = "datiDB")
     public class Reports {
 
         @PrimaryKey(autoGenerate = true)
         private long id;
 
         @Embedded(prefix = "peso")
-        private Nodo peso;
+        private Tupla peso;
         @Embedded(prefix = "temperatura")
-        private Nodo temperatura;
+        private Tupla temperatura;
         @Embedded(prefix = "glicemia")
-        private Nodo glicemia;
+        private Tupla glicemia;
         @ColumnInfo(name = "data")
         private String data;
         @ColumnInfo(name = "note")
@@ -34,15 +30,15 @@ import java.util.Date;
             return id;
         }
 
-        public Nodo getPeso() {
+        public Tupla getPeso() {
             return peso;
         }
 
-        public Nodo getGlicemia() {
+        public Tupla getGlicemia() {
             return glicemia;
         }
 
-        public Nodo getTemperatura() {
+        public Tupla getTemperatura() {
             return temperatura;
         }
 
@@ -58,18 +54,18 @@ import java.util.Date;
             return priorita;
         }
 
-        public void setTemperatura(Nodo temperatura) {
+        public void setTemperatura(Tupla temperatura) {
             this.temperatura = temperatura;
         }
 
-        public void setPeso(Nodo peso) {
+        public void setPeso(Tupla peso) {
             this.peso = peso;
         }
         public void setId(long id) {
 
             this.id = id;
         }
-        public void setGlicemia(Nodo glicemia) {
+        public void setGlicemia(Tupla glicemia) {
             this.glicemia = glicemia;
         }
         public void setData(String data) {
@@ -77,7 +73,6 @@ import java.util.Date;
         }
 
         public void setNote(String note) {
-
             this.note = note;
         }
 

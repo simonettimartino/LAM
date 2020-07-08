@@ -1,18 +1,14 @@
 package com.example.myhm;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-
+import androidx.viewpager.widget.ViewPager;
+import 	androidx.appcompat.app.AppCompatActivity;
+import 	com.google.android.material.tabs.TabLayout;
+import androidx.room.Room;
 import com.example.myhm.ui.main.SectionsPagerAdapter;
 
 public class MainActivity extends AppCompatActivity {
+    public static AppDatabase appDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "datiDB").build();
 
     }
 }
