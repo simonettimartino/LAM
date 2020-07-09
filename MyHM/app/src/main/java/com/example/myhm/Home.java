@@ -1,14 +1,20 @@
 package com.example.myhm;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,9 +29,12 @@ public class Home extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private String date;
+    private RecycleAdapter.OnNoteListener interfaceClick;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendario, container, false);
+
+
 
         calendario = view.findViewById(R.id.calendarView);
 
@@ -63,16 +72,77 @@ public class Home extends Fragment {
                     exampleList.add(list.get(i));
                 }
             }
-
+            if (exampleList.size()>1) {
+                double mPeso = 0, mTemperatura = 0, mGlicemia = 0;
+                int p1 = 0, p2 = 0, p3 = 0;
+                for(int j = 0; j < exampleList.size(); j++){
+                    mPeso = mPeso + exampleList.get(j).getPeso().getValore();
+                    p1 = p1 + exampleList.get(j).getPeso().getPriorità();
+                    mTemperatura = mTemperatura + exampleList.get(j).getTemperatura().getValore();
+                    p2 = p2 + exampleList.get(j).getTemperatura().getPriorità();
+                    mGlicemia = mGlicemia + exampleList.get(j).getGlicemia().getValore();
+                    p3 = p3 + exampleList.get(j).getGlicemia().getPriorità();
+                }
+                int l = exampleList.size();
+                Reports r = new Reports();
+                r.setData(exampleList.get(0).getData());
+                r.setPeso(new Tupla(Math.round(mPeso/l*100)/100,(int)p1/l));
+                r.setTemperatura(new Tupla(Math.round(mTemperatura/l*100)/100, (int)p2/l));
+                r.setGlicemia(new Tupla(Math.round(mGlicemia/l*100)/100, (int)p3/l));
+                r.setNote("Report riassuntivo");
+                exampleList.add(0, r);
+            }
             mRecyclerView = getView().findViewById(R.id.recyclerView);
             mRecyclerView.setHasFixedSize(true);
             mLayoutManager = new LinearLayoutManager(getContext());
-            mAdapter = new RecycleAdapter(exampleList);
+            mAdapter = new RecycleAdapter(exampleList, interfaceClick);
             mRecyclerView.setLayoutManager(mLayoutManager);
+
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(sipmleCallback);
+            itemTouchHelper.attachToRecyclerView(mRecyclerView);
             mRecyclerView.setAdapter(mAdapter);
 
-            if(exampleList.size() == 0) { Toast.makeText(getView().getContext(), "Non ci sono report per la data selezionata!", Toast.LENGTH_SHORT).show();}
+
+            if(exampleList.size() == 0) {
+                Toast.makeText(getView().getContext(), "Non ci sono report per la data selezionata!", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }
+
+
+    ItemTouchHelper.SimpleCallback sipmleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT){
+
+
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            exampleList.remove(viewHolder.getAdapterPosition());
+            mAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+
+           /* int position = viewHolder.getAdapterPosition();
+            switch (direction){
+                case ItemTouchHelper.LEFT:
+
+                    exampleList.remove(position);
+                    mAdapter.notifyItemRemoved(position);
+
+                    break;
+
+                case ItemTouchHelper.RIGHT:
+
+                    break;
+
+            }*/
+        }
+    };
+
+
+
+
 }

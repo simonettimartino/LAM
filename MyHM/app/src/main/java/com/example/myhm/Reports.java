@@ -25,7 +25,6 @@ import androidx.room.PrimaryKey;
 
 
 
-
         public long getId() {
             return id;
         }
