@@ -1,6 +1,10 @@
 package com.example.myhm;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.viewpager.widget.ViewPager;
 import 	androidx.appcompat.app.AppCompatActivity;
 import 	com.google.android.material.tabs.TabLayout;
@@ -22,4 +26,8 @@ public class MainActivity extends AppCompatActivity {
         appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "datiDB").build();
 
     }
+
+
+
+
 }

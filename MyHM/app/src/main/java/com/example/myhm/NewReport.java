@@ -112,7 +112,11 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
                         rep.setTemperatura(new Tupla(Double.parseDouble(temperatura.getText().toString()),Integer.parseInt(spinnerTemperatura.getSelectedItem().toString())));
                         rep.setGlicemia(new Tupla(Double.parseDouble(glicemia.getText().toString()),Integer.parseInt(spinnerGlicemia.getSelectedItem().toString())));
 
-                        if (note.getText().length() != 0){rep.setNote(note.getText().toString());}
+                        if (note.getText().length() != 0){
+                            rep.setNote(note.getText().toString());
+                        } else {
+                            rep.setNote("");
+                        }
 
                         rep.setData(date);
 

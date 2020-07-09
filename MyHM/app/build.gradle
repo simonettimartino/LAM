@@ -61,4 +61,5 @@ dependencies {
 
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.2.3'
 }

@@ -1,6 +1,7 @@
 package com.example.myhm;
 
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -11,8 +12,10 @@ import android.widget.CalendarView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class Home extends Fragment {
 
@@ -30,6 +36,7 @@ public class Home extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private String date;
     private RecycleAdapter.OnNoteListener interfaceClick;
+    private static Reports reportModifica;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendario, container, false);
@@ -45,6 +52,7 @@ public class Home extends Fragment {
                 date = month + "/" + day + "/" + year;
                    // Toast.makeText(view.getContext(), date, Toast.LENGTH_LONG).show();
                 new AsyncTaskRiceviReports().execute();
+
             }
         });
 
@@ -52,6 +60,8 @@ public class Home extends Fragment {
 
         return view;
     }
+
+
 
 
     public class AsyncTaskRiceviReports extends AsyncTask<Void, Void, Void> {
@@ -122,13 +132,13 @@ public class Home extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
-            exampleList.remove(viewHolder.getAdapterPosition());
-            mAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-
-           /* int position = viewHolder.getAdapterPosition();
+            int position = viewHolder.getAdapterPosition();
             switch (direction){
                 case ItemTouchHelper.LEFT:
 
+                    if(!exampleList.get(position).getNote().equals("Report riassuntivo")){
+                        new AsyncTaskEliminaReport().execute(exampleList.get(position));
+                    }
                     exampleList.remove(position);
                     mAdapter.notifyItemRemoved(position);
 
@@ -136,13 +146,73 @@ public class Home extends Fragment {
 
                 case ItemTouchHelper.RIGHT:
 
+                    openDialog(exampleList.get(position));
+
+
+
                     break;
 
-            }*/
+            }
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(getActivity(), R.color.delite))
+                    .addSwipeLeftActionIcon(R.drawable.ic_baseline_delete_24)
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(getActivity(), R.color.modify))
+                    .addSwipeRightActionIcon(R.drawable.ic_baseline_edit_24)
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
         }
     };
 
+    private void openDialog(Reports reports) {
+
+        DialogModficaRep exampleDialog = new DialogModficaRep(reports);
+
+        exampleDialog.show(getFragmentManager(), "example dialog");
 
 
+    }
+
+
+
+
+
+
+    public class AsyncTaskEliminaReport extends AsyncTask<Reports, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Reports... report) {
+            MainActivity.appDatabase.dataAccessObject().rimuoviReport(report[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getActivity(), "Report rimosso",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public class AsyncTaskModificaReport extends AsyncTask<Reports, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Reports... report) {
+            MainActivity.appDatabase.dataAccessObject().aggiornaReport(report[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getActivity(), "Report aggiornato",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
 
 }
