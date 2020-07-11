@@ -36,7 +36,11 @@ public class Home extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private String date;
     private RecycleAdapter.OnNoteListener interfaceClick;
-    private static Reports reportModifica;
+    private static Home h;
+
+
+
+
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_calendario, container, false);
@@ -60,6 +64,11 @@ public class Home extends Fragment {
 
         return view;
     }
+
+    public void doRiceviRep(){
+        new AsyncTaskRiceviReports().execute();
+    }
+
 
 
 
@@ -147,8 +156,7 @@ public class Home extends Fragment {
                 case ItemTouchHelper.RIGHT:
 
                     openDialog(exampleList.get(position));
-
-
+                    new AsyncTaskRiceviReports().execute();
 
                     break;
 
@@ -212,6 +220,7 @@ public class Home extends Fragment {
             super.onPostExecute(aVoid);
             Toast.makeText(getActivity(), "Report aggiornato",
                     Toast.LENGTH_LONG).show();
+
         }
     }
 

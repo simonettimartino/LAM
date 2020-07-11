@@ -54,10 +54,11 @@ public class DialogModficaRep extends AppCompatDialogFragment {
 
                             reportNew.setPeso(new Tupla(Double.parseDouble(editTextP.getText().toString()), reportNew.getPeso().getPriorità()));
                             reportNew.setTemperatura(new Tupla(Double.parseDouble(editTextT.getText().toString()), reportNew.getTemperatura().getPriorità()));
-                            reportNew.setGlicemia(new Tupla(Double.parseDouble(editTextT.getText().toString()),reportNew.getGlicemia().getPriorità()));
+                            reportNew.setGlicemia(new Tupla(Double.parseDouble(editTextG.getText().toString()),reportNew.getGlicemia().getPriorità()));
                             System.out.println("Peso 2 " + reportNew.getPeso().getValore());
 
                             new AsyncTaskModificaReport().execute(reportNew);
+
 
                         }else {
                             Toast.makeText(getActivity(), "Inserici tutti i dati!", Toast.LENGTH_SHORT).show();
