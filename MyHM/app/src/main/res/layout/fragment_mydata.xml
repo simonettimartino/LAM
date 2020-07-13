@@ -71,12 +71,22 @@
         android:id="@+id/editTextTime"
         android:layout_width="82dp"
         android:layout_height="45dp"
+        android:layout_marginStart="56dp"
         android:layout_marginTop="8dp"
         android:ems="10"
         android:hint=" hh : mm "
         android:inputType="time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.118"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+    <Button
+        android:id="@+id/aggiorna"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="aggiorna"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.513"
+        app:layout_constraintStart_toEndOf="@+id/editTextTime"
         app:layout_constraintTop_toBottomOf="@+id/textView15" />
 </androidx.constraintlayout.widget.ConstraintLayout>
