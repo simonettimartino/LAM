@@ -45,17 +45,17 @@ public class DialogModficaRep extends AppCompatDialogFragment {
                 .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        System.out.println("Peso 0 " + reportNew.getPeso().getValore());
+                        //System.out.println("Peso 0 " + reportNew.getPeso().getValore());
 
                         if (editTextP.getText().length() != 0 &&
                             editTextT.getText().length() != 0 &&
                             editTextG.getText().length() != 0 ) {
-                            System.out.println("Peso 1 " + reportNew.getPeso().getValore());
+                           // System.out.println("Peso 1 " + reportNew.getPeso().getValore());
 
                             reportNew.setPeso(new Tupla(Double.parseDouble(editTextP.getText().toString()), reportNew.getPeso().getPriorità()));
                             reportNew.setTemperatura(new Tupla(Double.parseDouble(editTextT.getText().toString()), reportNew.getTemperatura().getPriorità()));
                             reportNew.setGlicemia(new Tupla(Double.parseDouble(editTextG.getText().toString()),reportNew.getGlicemia().getPriorità()));
-                            System.out.println("Peso 2 " + reportNew.getPeso().getValore());
+                          //  System.out.println("Peso 2 " + reportNew.getPeso().getValore());
 
                             new AsyncTaskModificaReport().execute(reportNew);
 

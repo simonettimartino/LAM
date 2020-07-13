@@ -26,5 +26,9 @@ public interface DataAccessObject {
     public List<DatoUtente> getDatiFiltrati(int prio);
 */
 
+   /* @Query("select data, count(*) from datiDB group by data ")
+    public List<Reports> getDatiMedi();
+
+    */
 }
 
