@@ -1,5 +1,6 @@
 package com.example.myhm;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
@@ -20,7 +21,7 @@ public class MyData extends Fragment {
     private TextView nome;
     private String n;
     private EditText h;
-    private Button aggiorna;
+    private Button aggiorna, rep;
 
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String NOME = "nome";
@@ -38,6 +39,13 @@ public class MyData extends Fragment {
         h = view.findViewById(R.id.editTextTime);
         h.setHint(sharedPreferences.getString(ORARIO, " hh : mm "));
 
+        rep = view.findViewById(R.id.buttonRep);
+        rep.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), ReportsActivity.class));
+            }
+        });
         aggiorna = view.findViewById(R.id.aggiorna);
         aggiorna.setOnClickListener(new View.OnClickListener() {
             @Override

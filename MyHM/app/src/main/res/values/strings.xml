@@ -18,4 +18,9 @@
         <item>glicemia</item>
     </string-array>
 
+    <string-array name="maggiore">
+        <item>maggiore</item>
+        <item>minore</item>
+    </string-array>
+
 </resources>
