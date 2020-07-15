@@ -6,30 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:allowBackup="true"
-    android:background="@android:color/holo_blue_dark"
     android:orientation="vertical"
     tools:context=".MyData">
 
     <TextView
         android:id="@+id/textView12"
-        android:layout_width="71dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="32dp"
         android:text="Ciao"
-        android:textSize="35dp"
+        android:textSize="35sp"
+        android:textStyle="italic"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/nome1"
         android:layout_width="wrap_content"
-        android:layout_height="46dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         android:text="nome"
-        android:textSize="30sp"
-        android:textStyle="bold|italic"
+        android:textSize="35sp"
+        android:textStyle="italic"
         app:layout_constraintStart_toEndOf="@+id/textView12"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -88,7 +88,7 @@
         android:id="@+id/buttonRep"
         android:layout_width="211dp"
         android:layout_height="44dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="52dp"
         android:text="My REPORTS"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

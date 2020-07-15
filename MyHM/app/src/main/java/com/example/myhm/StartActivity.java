@@ -27,14 +27,17 @@ public class StartActivity extends AppCompatActivity {
 
         avanti = this.findViewById(R.id.buttonStart);
         nome = this.findViewById(R.id.nome);
-
+        Toast.makeText(this, "Inserisci il tuo nome", Toast.LENGTH_SHORT).show();
         avanti.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                saveData();
+                if (!nome.getText().toString().equals("")){
+                    saveData();
+                    startActivity(new Intent(StartActivity.this, MainActivity.class));
+                } else
+                    Toast.makeText(StartActivity.this, "Inserisci il tuo nome", Toast.LENGTH_SHORT).show();
 
-                startActivity(new Intent(StartActivity.this, MainActivity.class));
             }
         });
     }
