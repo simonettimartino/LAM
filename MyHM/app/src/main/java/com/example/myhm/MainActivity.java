@@ -23,7 +23,7 @@ import java.util.Calendar;
 public class MainActivity extends AppCompatActivity {
     public static AppDatabase appDatabase;
     private SectionsPagerAdapter sectionsPagerAdapter;
-    private Integer n = 1;
+    private Integer n = 0;
     private ViewPager viewPager;
     private Intent intentNotfiche;
 
@@ -83,21 +83,22 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Intent intent = getIntent();
 
-        Boolean bool = intent.getBooleanExtra("fromNotify", false);
-        Log.d("ciao", String.valueOf(bool));
-        if (bool){
+        Boolean bool = intent.getBooleanExtra("t", false);
+        Boolean bool1 = intent.getBooleanExtra("y", false);
+        Log.d("bool", String.valueOf(bool));
+        Log.d("bool1", String.valueOf(bool1));
+        if (bool) {
             n = 2;
-            Log.d("ciao","sono entrato nel if");
+            Log.d("if1", "sono entrato nel if");
+            sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+            viewPager = findViewById(R.id.view_pager);
+            viewPager.setAdapter(sectionsPagerAdapter);
+            TabLayout tabs = findViewById(R.id.tabs);
+            tabs.setupWithViewPager(viewPager);
+            appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "datiDB").build();
+            viewPager.setCurrentItem(n);
+            bool = false;
         }
-
-        sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
-        TabLayout tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
-        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "datiDB").build();
-        viewPager.setCurrentItem(n);
-
 
 
     }

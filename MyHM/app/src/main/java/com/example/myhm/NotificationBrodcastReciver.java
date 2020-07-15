@@ -62,13 +62,14 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
             Intent repeating_intent = new Intent(context, MainActivity.class);
-            repeating_intent.putExtra("fromNotify",true);
+            repeating_intent.putExtra("t",true);
             repeating_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 100, repeating_intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            Intent posponi = new Intent(context, MainActivity.class);
-            posponi.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent posponiPendInt = PendingIntent.getActivity(context, 100, posponi, PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent intent = new Intent(context, PostponiActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            PendingIntent intent2 = PendingIntent.getActivity(context, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
             NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID);
@@ -79,9 +80,12 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
             mBuilder.setContentText("Aggiungi un report!");
             mBuilder.setPriority(Notification.PRIORITY_MAX);
             mBuilder.setStyle(bigText);
-            mBuilder.setAutoCancel(true);
+            //mBuilder.setAutoCancel(true);
             mBuilder.addAction(R.drawable.ic_baseline_edit_24, "NEW REP", pendingIntent);
+            mBuilder.addAction(R.drawable.ic_baseline_redo_24,"POSTPONI", intent2);
 
+            Boolean bool = repeating_intent.getBooleanExtra("t", false);
+            Log.d("NBR", String.valueOf(bool));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel(
@@ -100,14 +104,16 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
 
     private void checkInDB() {
         Date data = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
         String dataString = df.format(data);
+        if(dataString.startsWith("0"))
+            dataString = dataString.substring(1);
         if(reports.size()==0){
             inDB = false;
             Log.d("TEST4","sono qui 4");
         }
         for(int i = 0; i < reports.size(); i++){
-            Log.d("TEST2","sono qui 2");
+            Log.d("TEST2","sono qui 2  " + dataString + "data in db " + reports.get(i).getData());
             if(reports.get(i).getData().equals(dataString)){
                 inDB = true;
                 Log.d("TEST3","sono qui 3");

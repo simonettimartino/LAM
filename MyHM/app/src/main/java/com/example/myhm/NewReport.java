@@ -1,6 +1,7 @@
 package com.example.myhm;
 
 import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -19,13 +20,17 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import java.util.Calendar;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class NewReport extends Fragment implements AdapterView.OnItemSelectedListener {
 
     private static final String TAG = "MainActivity";
+    public static final String SHARED_PREFS = "sharedPrefs";
 
     private Spinner spinnerPeso, spinnerTemperatura, spinnerGlicemia;
     private Button nuovoReport;
@@ -34,6 +39,7 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
     private TextView data;
     private String date;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
+
 
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,6 +52,7 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
      adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
      nuovoReport = view.findViewById(R.id.buttonInviaR);
+     SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
 
      peso = view.findViewById(R.id.datoPeso);
      temperatura = view.findViewById(R.id.datoTemperatura);
@@ -64,6 +71,13 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
      spinnerGlicemia = view.findViewById(R.id.prioritaGlicemia);
      spinnerGlicemia.setAdapter(adapter);
      spinnerGlicemia.setOnItemSelectedListener(this);
+
+        int kg = sharedPreferences.getInt("peso", 0);
+        spinnerPeso.setSelection(kg - 1);
+        int gc = sharedPreferences.getInt("temperatura", 0);
+        spinnerTemperatura.setSelection(gc - 1);
+        int gl = sharedPreferences.getInt("glicemia", 0);
+        spinnerGlicemia.setSelection(gl - 1);
 
 
             data = (TextView) view.findViewById(R.id.datoData);
@@ -103,14 +117,28 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
             @Override
             public void onClick(View view) {
                 Reports rep = new Reports();
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+
+
                 if (peso.getText().length() != 0 &&
                     temperatura.getText().length() != 0 &&
                     glicemia.getText().length() != 0 &&
                     data.getText().length() != 0) {
 
                         rep.setPeso(new Tupla(Double.parseDouble(peso.getText().toString()),Integer.parseInt(spinnerPeso.getSelectedItem().toString())));
+                        editor.putInt("peso", Integer.parseInt(spinnerPeso.getSelectedItem().toString()));
                         rep.setTemperatura(new Tupla(Double.parseDouble(temperatura.getText().toString()),Integer.parseInt(spinnerTemperatura.getSelectedItem().toString())));
+                        editor.putInt("temperatura",Integer.parseInt(spinnerTemperatura.getSelectedItem().toString()));
                         rep.setGlicemia(new Tupla(Double.parseDouble(glicemia.getText().toString()),Integer.parseInt(spinnerGlicemia.getSelectedItem().toString())));
+                        editor.putInt("glicemia",Integer.parseInt(spinnerGlicemia.getSelectedItem().toString()));
+                        editor.apply();
+
+                        rep.setPriorita((Integer.parseInt(spinnerPeso.getSelectedItem().toString()) +
+                                Integer.parseInt(spinnerTemperatura.getSelectedItem().toString()) +
+                                Integer.parseInt(spinnerGlicemia.getSelectedItem().toString()))/3);
+
 
                         if (note.getText().length() != 0){
                             rep.setNote(note.getText().toString());
@@ -126,9 +154,13 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
                         glicemia.setText("");
                         data.setText("");
                         note.setText("");
-                        spinnerGlicemia.setSelection(0);
-                        spinnerPeso.setSelection(0);
-                        spinnerTemperatura.setSelection(0);
+
+                        int kg = sharedPreferences.getInt("peso", 0);
+                        spinnerPeso.setSelection(kg - 1);
+                        int gc = sharedPreferences.getInt("temperatura", 0);
+                        spinnerTemperatura.setSelection(gc - 1);
+                        int gl = sharedPreferences.getInt("glicemia", 0);
+                        spinnerGlicemia.setSelection(gl - 1);
                        // Toast.makeText(view.getContext(), "Report inserito!", Toast.LENGTH_SHORT).show();
                 } else {
                         Toast.makeText(view.getContext(), "Inserici tutti i dati!", Toast.LENGTH_SHORT).show();

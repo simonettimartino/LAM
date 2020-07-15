@@ -14,7 +14,7 @@ import android.widget.Spinner;
 
 public class Grafici extends Fragment implements AdapterView.OnItemSelectedListener{
 
-    private Button bP;
+    private Button bP, bS;
     private Spinner spinner;
     private String graf;
 
@@ -22,6 +22,7 @@ public class Grafici extends Fragment implements AdapterView.OnItemSelectedListe
          View v = inflater.inflate(R.layout.fragment_grafici, container, false);
 
         bP = v.findViewById(R.id.buttonGraficoPeso);
+        bS = v.findViewById(R.id.buttonScat);
 
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
@@ -43,6 +44,15 @@ public class Grafici extends Fragment implements AdapterView.OnItemSelectedListe
 
         });
 
+        bS.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(getContext(), ScatterPlotActivity.class));
+            }
+
+        });
+
 
         return v;
     }
@@ -51,6 +61,7 @@ public class Grafici extends Fragment implements AdapterView.OnItemSelectedListe
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         graf = adapterView.getItemAtPosition(i).toString();
         ActivityGraficoPeso.setGrafico(graf);
+        ScatterPlotActivity.setGrafico(graf);
     }
 
     @Override
