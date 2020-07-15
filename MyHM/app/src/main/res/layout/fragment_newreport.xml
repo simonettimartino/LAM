@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".NewReport">
 
+
+
     <ScrollView
         android:id="@+id/scrollView2"
         android:layout_width="343dp"

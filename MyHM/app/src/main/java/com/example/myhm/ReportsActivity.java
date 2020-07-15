@@ -7,11 +7,15 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -20,6 +24,7 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,9 +33,10 @@ import java.util.List;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
-public class ReportsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
+public class ReportsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    private Spinner maggiore, filtro;
+    private Spinner filtro;
+    private Switch maggiore;
     private List<Reports> exampleList, list;
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -43,7 +49,8 @@ public class ReportsActivity extends AppCompatActivity implements AdapterView.On
     private Boolean check = false;
     private String string;
     private Button filtra;
-    private Integer prog;
+    private Integer prog = 0;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
 
 
@@ -85,9 +92,8 @@ public class ReportsActivity extends AppCompatActivity implements AdapterView.On
                 android.R.layout.simple_spinner_item);
         adapterMaggiore.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        maggiore = findViewById(R.id.spinnerMaggiore);
-        maggiore.setAdapter(adapterMaggiore);
-        filtro.setOnItemSelectedListener(this);
+        maggiore = findViewById(R.id.switch1);
+
 
         filtra.setOnClickListener(new  View.OnClickListener() {
             @Override
@@ -97,18 +103,29 @@ public class ReportsActivity extends AppCompatActivity implements AdapterView.On
             }
         });
 
+
+
+
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+                check = false;
+                new AsyncTaskRiceviReports().execute();
+            }
+        });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         new AsyncTaskRiceviReports().execute();
     }
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        if (adapterView.getItemAtPosition(i).toString().equals("maggiore"))
-            mag = true;
-        else if (adapterView.getItemAtPosition(i).toString().equals("maggiore"))
-            mag = false;
-        else
             string = adapterView.getItemAtPosition(i).toString();
-
     }
 
     @Override
@@ -136,31 +153,31 @@ public class ReportsActivity extends AppCompatActivity implements AdapterView.On
                 if (check) {
                     switch (string) {
                         case "peso":
-                            if (mag) {
+                            if (maggiore.isChecked()) {
                                 if (list.get(i).getPeso().getValore() > prog)
                                     exampleList.add(list.get(i));
                             }
-                            if (!mag) {
+                            if (!maggiore.isChecked()) {
                                 if (list.get(i).getPeso().getValore() < prog)
                                     exampleList.add(list.get(i));
                             }
                             break;
                         case "temperatura":
-                            if (mag) {
+                            if (maggiore.isChecked()) {
                                 if (list.get(i).getTemperatura().getValore() > prog)
                                     exampleList.add(list.get(i));
                             }
-                            if (!mag ){
+                            if (!maggiore.isChecked() ){
                                 if (list.get(i).getTemperatura().getValore() < prog)
                                     exampleList.add(list.get(i));
                             }
                             break;
                         case "glicemia":
-                            if (mag) {
+                            if (maggiore.isChecked()) {
                                 if (list.get(i).getGlicemia().getValore() > prog)
                                     exampleList.add(list.get(i));
                             }
-                            if (!mag) {
+                            if (!maggiore.isChecked()) {
                                 if (list.get(i).getGlicemia().getValore() < prog)
                                     exampleList.add(list.get(i));
                             }
@@ -173,31 +190,24 @@ public class ReportsActivity extends AppCompatActivity implements AdapterView.On
                     exampleList.add(list.get(i));
                // }
             }
-            if (exampleList.size()>1) {
-                double mPeso = 0, mTemperatura = 0, mGlicemia = 0;
-                int p1 = 0, p2 = 0, p3 = 0;
-                for(int j = 0; j < exampleList.size(); j++){
-                    mPeso = mPeso + exampleList.get(j).getPeso().getValore();
-                    p1 = p1 + exampleList.get(j).getPeso().getPriorità();
-                    mTemperatura = mTemperatura + exampleList.get(j).getTemperatura().getValore();
-                    p2 = p2 + exampleList.get(j).getTemperatura().getPriorità();
-                    mGlicemia = mGlicemia + exampleList.get(j).getGlicemia().getValore();
-                    p3 = p3 + exampleList.get(j).getGlicemia().getPriorità();
-                }
-                int l = exampleList.size();
-                Reports r = new Reports();
-                r.setData(exampleList.get(0).getData());
-                r.setPeso(new Tupla(Math.round(mPeso/l*100)/100,(int)p1/l));
-                r.setTemperatura(new Tupla(Math.round(mTemperatura/l*100)/100, (int)p2/l));
-                r.setGlicemia(new Tupla(Math.round(mGlicemia/l*100)/100, (int)p3/l));
-                r.setNote("Report riassuntivo");
-                exampleList.add(0, r);
-            }
+
             mRecyclerView = ReportsActivity.this.findViewById(R.id.RV);
             mRecyclerView.setHasFixedSize(true);
             mLayoutManager = new LinearLayoutManager(ReportsActivity.this);
             mAdapter = new RecycleAdapter(exampleList, interfaceClick);
             mRecyclerView.setLayoutManager(mLayoutManager);
+
+            mRecyclerView.addOnItemTouchListener(
+                    new RecyclerItemClickListener(ReportsActivity.this, mRecyclerView ,new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override public void onItemClick(View view, int position) {
+                            Toast.makeText(ReportsActivity.this, "Data report: " + exampleList.get(position).getData(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override public void onLongItemClick(View view, int position) {
+                            // do whatever
+                        }
+                    })
+            );
 
             ItemTouchHelper itemTouchHelper = new ItemTouchHelper(sipmleCallback);
             itemTouchHelper.attachToRecyclerView(mRecyclerView);
@@ -305,4 +315,48 @@ public class AsyncTaskModificaReport extends AsyncTask<Reports, Void, Void> {
     }
 }
 
+}
+class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener {
+        public void onItemClick(View view, int position);
+
+        public void onLongItemClick(View view, int position);
+    }
+
+    GestureDetector mGestureDetector;
+
+    public RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener) {
+        mListener = listener;
+        mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                if (child != null && mListener != null) {
+                    mListener.onLongItemClick(child, recyclerView.getChildAdapterPosition(child));
+                }
+            }
+        });
+    }
+
+    @Override public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
+        View childView = view.findChildViewUnder(e.getX(), e.getY());
+        if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
+            mListener.onItemClick(childView, view.getChildAdapterPosition(childView));
+            return true;
+        }
+        return false;
+    }
+
+    @Override public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) { }
+
+
+    @Override
+    public void onRequestDisallowInterceptTouchEvent (boolean disallowIntercept){}
 }

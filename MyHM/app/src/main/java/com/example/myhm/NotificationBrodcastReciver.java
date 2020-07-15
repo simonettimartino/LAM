@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.room.Room;
@@ -31,7 +32,8 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         appDatabase = Room.databaseBuilder(context, AppDatabase.class, "datiDB").build();
-
+        Log.d("TEST1","sono qui 3331");
+        new AsyncTaskGetDati().execute();
 
     }
 
@@ -46,6 +48,7 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            Log.d("TEST1","sono qui 1");
             checkInDB();
             doNotifica(context);
         }
@@ -53,6 +56,8 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
 
     private void doNotifica(Context context) {
         if(!inDB){
+
+            System.out.println("sono entrato nel doNotifica");
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -68,14 +73,15 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
             NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID);
 
+            mBuilder.setSmallIcon(R.drawable.ic_baseline_edit_24);
             mBuilder.setContentIntent(pendingIntent);
             mBuilder.setContentTitle("Non hai inserito nessun report oggi");
             mBuilder.setContentText("Aggiungi un report!");
             mBuilder.setPriority(Notification.PRIORITY_MAX);
             mBuilder.setStyle(bigText);
-            mBuilder.setAutoCancel(true); // se l'utente tocca la notifica, essa si chiude subito
-            mBuilder.addAction(R.drawable.ic_launcher_background, "Aggiungi", pendingIntent);
-            mBuilder.addAction(R.drawable.ic_launcher_background, "Posponi", posponiPendInt);
+            mBuilder.setAutoCancel(true);
+            mBuilder.addAction(R.drawable.ic_baseline_edit_24, "NEW REP", pendingIntent);
+
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel(
@@ -96,10 +102,16 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
         Date data = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyyy");
         String dataString = df.format(data);
-
+        if(reports.size()==0){
+            inDB = false;
+            Log.d("TEST4","sono qui 4");
+        }
         for(int i = 0; i < reports.size(); i++){
+            Log.d("TEST2","sono qui 2");
             if(reports.get(i).getData().equals(dataString)){
                 inDB = true;
+                Log.d("TEST3","sono qui 3");
+                break;
             }
         }
     }

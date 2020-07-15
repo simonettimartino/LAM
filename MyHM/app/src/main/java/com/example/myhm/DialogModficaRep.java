@@ -36,7 +36,7 @@ public class DialogModficaRep extends AppCompatDialogFragment {
         editTextG = view.findViewById(R.id.modificaGlicemia);
 
         builder.setView(view)
-                .setTitle("Modifica Report" + reportNew.getId())
+                .setTitle("Modifica Report" )
                 .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -84,7 +84,7 @@ public class DialogModficaRep extends AppCompatDialogFragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Toast.makeText(getActivity(), "Report aggiornato", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getActivity(), "Report aggiornato", Toast.LENGTH_LONG).show();
         }
 
     }

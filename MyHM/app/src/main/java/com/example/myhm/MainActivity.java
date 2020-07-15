@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 import 	androidx.appcompat.app.AppCompatActivity;
 import 	com.google.android.material.tabs.TabLayout;
@@ -19,6 +22,10 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     public static AppDatabase appDatabase;
+    private SectionsPagerAdapter sectionsPagerAdapter;
+    private Integer n = 1;
+    private ViewPager viewPager;
+    private Intent intentNotfiche;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
-        ViewPager viewPager = findViewById(R.id.view_pager);
+        sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
         appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "datiDB").build();
-
+        viewPager.setCurrentItem(n);
     }
 
     public void setUpNotification() {
@@ -58,21 +65,50 @@ public class MainActivity extends AppCompatActivity {
             minuti = Integer.parseInt(orario.substring(orario.indexOf(":")+1));
         }
         System.out.println("ore: " + ore + " minuti:" + minuti);
-        Calendar sceltaOrarioCalendario = Calendar.getInstance(); //mi servirà per trovare l'orario corretto
+        Calendar sceltaOrarioCalendario = Calendar.getInstance();
         sceltaOrarioCalendario.set(Calendar.HOUR_OF_DAY, ore);
         sceltaOrarioCalendario.set(Calendar.MINUTE, minuti);
-        sceltaOrarioCalendario.set(Calendar.SECOND, 0); //non faccio settare i secondi all'utente
-        //Toast.makeText(getApplicationContext(), "Orario in cui riceverai la notifica: " + oreInt + ":" + minutiInt, Toast.LENGTH_LONG).show();
+        sceltaOrarioCalendario.set(Calendar.SECOND, 0);
 
         Intent intent = new Intent(this, NotificationBrodcastReciver.class);
         intent.setAction("MY_NOTIFICATION_MESSAGE");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        //considero anche se il device va in sleep mode
-        //come secondo parametro gli passo la data/ora scelta dall'utente
+
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent); //
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent intent = getIntent();
+
+        Boolean bool = intent.getBooleanExtra("fromNotify", false);
+        Log.d("ciao", String.valueOf(bool));
+        if (bool){
+            n = 2;
+            Log.d("ciao","sono entrato nel if");
+        }
+
+        sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(sectionsPagerAdapter);
+        TabLayout tabs = findViewById(R.id.tabs);
+        tabs.setupWithViewPager(viewPager);
+        appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "datiDB").build();
+        viewPager.setCurrentItem(n);
 
 
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+
+        // set the string passed from the service to the original intent
+        setIntent(intent);
+
+    }
 }

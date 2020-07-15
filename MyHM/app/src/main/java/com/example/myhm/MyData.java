@@ -1,5 +1,8 @@
 package com.example.myhm;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
+import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 
 public class MyData extends Fragment {
@@ -50,19 +56,51 @@ public class MyData extends Fragment {
         aggiorna.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!h.getText().toString().equals("") && h.getText().toString().matches("\\d\\d:\\d\\d")){
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(ORARIO, h.getText().toString());
+                    editor.apply();
+                    Toast.makeText(getContext(), "Data saved", Toast.LENGTH_SHORT).show();
 
-                SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString(ORARIO, h.getText().toString());
-                editor.apply();
-                Toast.makeText(getContext(), "Data saved", Toast.LENGTH_SHORT).show();
+                    h.setText("");
+                    h.setHint(sharedPreferences.getString(ORARIO, " hh : mm "));
 
-                h.setText("");
-                h.setHint(sharedPreferences.getString(ORARIO, " hh : mm "));
+                    setUpNotification();
+                }else {
+                    Toast.makeText(getView().getContext(), "Inserisci l'orario nel formato giusto!", Toast.LENGTH_SHORT).show();
+                }
+
+
             }
         });
 
         return view;
+    }
+
+    public void setUpNotification() {
+
+        int ore = 12, minuti = 0;
+
+        SharedPreferences prefs = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
+        String orario = prefs.getString("orario", " hh : mm ");
+
+        if(!orario.equals(" hh : mm ")) {
+            ore = Integer.parseInt(orario.substring(0, orario.indexOf(":")));
+            minuti = Integer.parseInt(orario.substring(orario.indexOf(":")+1));
+        }
+        System.out.println("ore: " + ore + " minuti:" + minuti);
+        Calendar sceltaOrarioCalendario = Calendar.getInstance();
+        sceltaOrarioCalendario.set(Calendar.HOUR_OF_DAY, ore);
+        sceltaOrarioCalendario.set(Calendar.MINUTE, minuti);
+        sceltaOrarioCalendario.set(Calendar.SECOND, 0);
+
+        Intent intent = new Intent(getActivity(), NotificationBrodcastReciver.class);
+        intent.setAction("MY_NOTIFICATION_MESSAGE");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent); //
     }
 
 }
