@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
         boolean firstStart = prefs.getBoolean("firstStart", true);
+        boolean notifica = prefs.getBoolean("notifica", true);
 
         if (firstStart){
             startActivity(new Intent(MainActivity.this, StartActivity.class));
@@ -41,8 +42,11 @@ public class MainActivity extends AppCompatActivity {
             editor.putBoolean("firstStart", false);
             editor.apply();
         }
-
-        setUpNotification();
+        if (notifica) {
+            setUpNotification();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("notifica", false);
+        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

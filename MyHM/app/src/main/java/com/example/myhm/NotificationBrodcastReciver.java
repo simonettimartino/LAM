@@ -76,7 +76,7 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
 
             mBuilder.setSmallIcon(R.drawable.ic_baseline_edit_24);
             mBuilder.setContentIntent(pendingIntent);
-            mBuilder.setContentTitle("Non hai inserito nessun report oggi");
+            mBuilder.setContentTitle("Non hai inserito nessun report oggi!");
             mBuilder.setContentText("Aggiungi un report!");
             mBuilder.setPriority(Notification.PRIORITY_MAX);
             mBuilder.setStyle(bigText);

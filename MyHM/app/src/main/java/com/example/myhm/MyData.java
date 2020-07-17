@@ -62,11 +62,16 @@ public class MyData extends Fragment {
                     editor.putString(ORARIO, h.getText().toString());
                     editor.apply();
                     Toast.makeText(getContext(), "Data saved", Toast.LENGTH_SHORT).show();
-
+                    SharedPreferences prefs = getActivity().getSharedPreferences("prefs", MODE_PRIVATE);
                     h.setText("");
                     h.setHint(sharedPreferences.getString(ORARIO, " hh : mm "));
-
-                    setUpNotification();
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit.putBoolean("notifica", false);
+                    boolean notifica = prefs.getBoolean("notifica", true);
+                    if (notifica) {
+                        setUpNotification();
+                        editor.putBoolean("notifica", false);
+                    }
                 }else {
                     Toast.makeText(getView().getContext(), "Inserisci l'orario nel formato giusto!", Toast.LENGTH_SHORT).show();
                 }

@@ -61,11 +61,12 @@ public class PostponiActivity extends AppCompatActivity {
                 sceltaOrarioCalendario.set(Calendar.SECOND, 0);
 
                 Intent intent = new Intent(PostponiActivity.this, NotificationBrodcastReciver.class);
-                intent.setAction("MY_NOTIFICATION_MESSAGE");
+                intent.setAction("MY_NOTIFICATION_POSTPONI");
                 PendingIntent pendingIntent = PendingIntent.getBroadcast(PostponiActivity.this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), pendingIntent);
+                Toast.makeText(PostponiActivity.this, "Notifica postposta!", Toast.LENGTH_SHORT).show();
 
 
 
