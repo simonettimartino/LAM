@@ -23,4 +23,11 @@
         <item>minore</item>
     </string-array>
 
+    <string-array name="post">
+        <item>10 minuti</item>
+        <item>20 minuti</item>
+        <item>40 minuti</item>
+        <item>1 ora</item>>
+    </string-array>
+
 </resources>

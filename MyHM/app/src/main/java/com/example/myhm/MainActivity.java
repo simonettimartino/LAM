@@ -20,6 +20,8 @@ import com.example.myhm.ui.main.SectionsPagerAdapter;
 
 import java.util.Calendar;
 
+import static java.lang.System.currentTimeMillis;
+
 public class MainActivity extends AppCompatActivity {
     public static AppDatabase appDatabase;
     private SectionsPagerAdapter sectionsPagerAdapter;
@@ -70,12 +72,14 @@ public class MainActivity extends AppCompatActivity {
         sceltaOrarioCalendario.set(Calendar.MINUTE, minuti);
         sceltaOrarioCalendario.set(Calendar.SECOND, 0);
 
-        Intent intent = new Intent(this, NotificationBrodcastReciver.class);
-        intent.setAction("MY_NOTIFICATION_MESSAGE");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent); //
+            Intent intent = new Intent(this, NotificationBrodcastReciver.class);
+            intent.setAction("MY_NOTIFICATION_MESSAGE");
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent); //
+
     }
 
     @Override

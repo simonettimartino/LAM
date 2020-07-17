@@ -55,7 +55,7 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
     }
 
     private void doNotifica(Context context) {
-        if(!inDB){
+        if((!inDB)){
 
             System.out.println("sono entrato nel doNotifica");
 
@@ -96,7 +96,10 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
                 mBuilder.setChannelId(CHANNEL_ID);
                 Log.i("Notify", "Alarm"); //Optional, used for debuging.
             }
+
             notificationManager.notify(100, mBuilder.build());
+
+
 
 
         }
