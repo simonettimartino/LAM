@@ -54,7 +54,7 @@ public class ScatterPlotActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(Void aVoid) {
                 ScatterChart barChart = findViewById(R.id.idGraf2);
-                System.out.println(barChart);
+                //System.out.println(barChart);
 
                 ArrayList<Entry> arrayList = new ArrayList<>();
 
@@ -63,7 +63,7 @@ public class ScatterPlotActivity extends AppCompatActivity {
                         Date d = new SimpleDateFormat("MM/dd/yyyy").parse(list.get(i).getData());
                         Date dO = Calendar.getInstance().getTime();
                         float x = (float) ((dO.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
-                        System.out.println("x: " + x);
+                        //System.out.println("x: " + x);
                         float y = 0;
                         switch (grafico) {
                             case "peso":
@@ -90,7 +90,7 @@ public class ScatterPlotActivity extends AppCompatActivity {
 
                 ScatterData barData = new ScatterData(barDataSet);
                 barChart.setData(barData);
-                barChart.animateY(2000);
+                barChart.animateY(1000);
                 barChart.invalidate();
 
 

@@ -45,7 +45,7 @@
             android:id="@+id/m10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="5 minuti"
+            android:text="05 minuti"
             android:onClick="checkButton"
             android:checked="true"/>
 

@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myhm.ui.main.DialogMonitoraggio;
+
 import java.util.Calendar;
 
 import static android.content.Context.ALARM_SERVICE;
@@ -27,7 +29,7 @@ public class MyData extends Fragment {
     private TextView nome;
     private String n;
     private EditText h;
-    private Button aggiorna, rep;
+    private Button aggiorna, rep, monitoraggio;
 
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String NOME = "nome";
@@ -66,12 +68,12 @@ public class MyData extends Fragment {
                     h.setText("");
                     h.setHint(sharedPreferences.getString(ORARIO, " hh : mm "));
                     SharedPreferences.Editor edit = prefs.edit();
-                    edit.putBoolean("notifica", false);
-                    boolean notifica = prefs.getBoolean("notifica", true);
-                    if (notifica) {
-                        setUpNotification();
-                        editor.putBoolean("notifica", false);
-                    }
+                    // edit.putBoolean("notifica", false);
+                    // boolean notifica = prefs.getBoolean("notifica", true);
+                    //if (notifica) {
+                    setUpNotification();
+                    editor.putBoolean("notifica", false);
+                    //}
                 }else {
                     Toast.makeText(getView().getContext(), "Inserisci l'orario nel formato giusto!", Toast.LENGTH_SHORT).show();
                 }
@@ -80,15 +82,39 @@ public class MyData extends Fragment {
             }
         });
 
+        monitoraggio = view.findViewById(R.id.buttonMonitoraggio);
+        monitoraggio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+
+                if ( sharedPreferences.getInt("peso", 0) < 4 &&
+                    sharedPreferences.getInt("temperatura", 0) < 4 &&
+                    sharedPreferences.getInt("glicemia", 0) < 4){
+                        Toast.makeText(getView().getContext(), "Per monitorare un parametro è necessario che almeno un dato abbia priorità maggiore di 3", Toast.LENGTH_SHORT).show();
+
+                }else {
+
+                    DialogMonitoraggio exampleDialog = new DialogMonitoraggio();
+
+                    exampleDialog.show(getFragmentManager(), "example dialog");
+                }
+            }
+        });
+
         return view;
     }
 
     public void setUpNotification() {
 
+        Context context = getContext();
         int ore = 12, minuti = 0;
 
         SharedPreferences prefs = getActivity().getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         String orario = prefs.getString("orario", " hh : mm ");
+
+       // Toast.makeText(getActivity(), "h di notifica    " + orario, Toast.LENGTH_SHORT).show();
+
 
         if(!orario.equals(" hh : mm ")) {
             ore = Integer.parseInt(orario.substring(0, orario.indexOf(":")));
@@ -103,9 +129,10 @@ public class MyData extends Fragment {
         Intent intent = new Intent(getActivity(), NotificationBrodcastReciver.class);
         intent.setAction("MY_NOTIFICATION_MESSAGE");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(getActivity().ALARM_SERVICE);
 
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent); //
+       // Toast.makeText(getActivity(), "orario "  + orario + " ore " + ore +" minuti "+ minuti, Toast.LENGTH_SHORT).show();
     }
 
 }

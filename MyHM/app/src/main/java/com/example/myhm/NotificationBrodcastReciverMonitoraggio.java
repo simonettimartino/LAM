@@ -10,12 +10,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationCompat;
 import androidx.room.Room;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,19 +25,20 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.myhm.MyData.SHARED_PREFS;
 
-public class NotificationBrodcastReciver extends BroadcastReceiver {
+public class NotificationBrodcastReciverMonitoraggio extends BroadcastReceiver {
 
-    private final String CHANNEL_ID = "report_notification";
+    private final String CHANNEL_ID = "monitoraggio";
     private AppDatabase appDatabase;
     private List<Reports> reports;
     boolean inDB = false;
     private Context context;
+    private Date giorno1, giorno2, data;
 
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         appDatabase = Room.databaseBuilder(context, AppDatabase.class, "datiDB").build();
-        Log.d("TEST1","sono qui 3331");
+        //Log.d("TEST1","sono qui 3331");
         new AsyncTaskGetDati().execute();
 
     }
@@ -52,19 +54,55 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Log.d("TEST1","sono qui 1");
-            checkInDB();
-            doNotifica(context);
+            SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+            float soglia = prefs.getFloat("valSoglia", 0);
+            String parametro = prefs.getString("parametroMonitoraggio", "");
+
+            try {
+                Date giorno1 = new SimpleDateFormat("MM/dd/yyyy").parse(prefs.getString("oggiMonitoraggio", ""));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            try {
+                Date giorno2 = new SimpleDateFormat("MM/dd/yyyy").parse(prefs.getString("giornoMonitoraggio", ""));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            double media = 0.0;
+
+            for (int i = 0; i < reports.size(); i++){
+                try {
+                    data=new SimpleDateFormat("MM/dd/yyyy").parse(reports.get(i).getData());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (data.after(giorno1) && data.before(giorno2)){
+                    switch (parametro){
+                        case "peso" :
+                            media = media + reports.get(i).getPeso().getValore();
+                            break;
+                        case "temperatura" :
+                            media = media + reports.get(i).getTemperatura().getValore();
+                            break;
+                        case "glicemia" :
+                            media = media + reports.get(i).getGlicemia().getValore();
+                            break;
+                    }
+
+                }
+            }
+            if (media > soglia)
+                doNotifica(context);
         }
     }
 
     private void doNotifica(Context context) {
-        if((!inDB)){
 
             System.out.println("sono entrato nel doNotifica");
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
+            /*
             Intent repeating_intent = new Intent(context, MainActivity.class);
             repeating_intent.putExtra("t",true);
             repeating_intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -74,29 +112,24 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             PendingIntent intent2 = PendingIntent.getActivity(context, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            */
 
             NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID);
 
             mBuilder.setSmallIcon(R.drawable.ic_baseline_edit_24);
-            mBuilder.setContentIntent(pendingIntent);
-
-            SharedPreferences prefs = context.getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-
-            String orario = prefs.getString("orario", " hh : mm ");
+            //mBuilder.setContentIntent(pendingIntent);
 
 
-            mBuilder.setContentTitle("Non hai inserito il rep!   " + orario);
-            mBuilder.setContentText("Aggiungi un report!");
+
+
+            mBuilder.setContentTitle("Hai superato il valore soglia " );
+
             mBuilder.setPriority(Notification.PRIORITY_MAX);
             mBuilder.setStyle(bigText);
-            //mBuilder.setAutoCancel(true);
-            mBuilder.addAction(R.drawable.ic_baseline_edit_24, "NEW REP", pendingIntent);
-            mBuilder.addAction(R.drawable.ic_baseline_redo_24,"POSTPONI", intent2);
 
-            Boolean bool = repeating_intent.getBooleanExtra("t", false);
-            Log.d("NBR", String.valueOf(bool));
 
+            // controllo che non
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel(
                         CHANNEL_ID,
@@ -107,31 +140,9 @@ public class NotificationBrodcastReciver extends BroadcastReceiver {
                 Log.i("Notify", "Alarm"); //Optional, used for debuging.
             }
 
-            notificationManager.notify(100, mBuilder.build());
+            notificationManager.notify(101, mBuilder.build());
 
-
-
-
-        }
     }
 
-    private void checkInDB() {
-        Date data = Calendar.getInstance().getTime();
-        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-        String dataString = df.format(data);
-        if(dataString.startsWith("0"))
-            dataString = dataString.substring(1);
-        if(reports.size()==0){
-            inDB = false;
-            Log.d("TEST4","sono qui 4");
-        }
-        for(int i = 0; i < reports.size(); i++){
-            Log.d("TEST2","sono qui 2  " + dataString + "data in db " + reports.get(i).getData());
-            if(reports.get(i).getData().equals(dataString)){
-                inDB = true;
-                Log.d("TEST3","sono qui 3");
-                break;
-            }
-        }
-    }
+
 }

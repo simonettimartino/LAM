@@ -33,7 +33,7 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
     public static final String SHARED_PREFS = "sharedPrefs";
 
     private Spinner spinnerPeso, spinnerTemperatura, spinnerGlicemia;
-    private Button nuovoReport;
+    private Button nuovoReport, aggiornaPriorita;
     private EditText peso, temperatura, glicemia, note;
     private int j, priorita, prioritaPeso, prioritaTemperatura, prioritaGlicemia;
     private TextView data;
@@ -53,6 +53,7 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
 
      nuovoReport = view.findViewById(R.id.buttonInviaR);
      SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+     SharedPreferences.Editor editor = sharedPreferences.edit();
 
      peso = view.findViewById(R.id.datoPeso);
      temperatura = view.findViewById(R.id.datoTemperatura);
@@ -111,7 +112,21 @@ public class NewReport extends Fragment implements AdapterView.OnItemSelectedLis
                 }
             };
 
+            aggiornaPriorita = view.findViewById(R.id.newPrio);
 
+
+        aggiornaPriorita.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("peso", Integer.parseInt(spinnerPeso.getSelectedItem().toString()));
+                editor.putInt("temperatura",Integer.parseInt(spinnerTemperatura.getSelectedItem().toString()));
+                editor.putInt("glicemia",Integer.parseInt(spinnerGlicemia.getSelectedItem().toString()));
+                editor.apply();
+            }
+
+        });
 
         nuovoReport.setOnClickListener(new View.OnClickListener() {
             @Override

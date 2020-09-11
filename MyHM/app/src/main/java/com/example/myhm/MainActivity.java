@@ -36,17 +36,24 @@ public class MainActivity extends AppCompatActivity {
         boolean firstStart = prefs.getBoolean("firstStart", true);
         boolean notifica = prefs.getBoolean("notifica", true);
 
+        // se è il primo accesso in assoluto all'APP
         if (firstStart){
             startActivity(new Intent(MainActivity.this, StartActivity.class));
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("firstStart", false);
             editor.apply();
+            setUpNotification();
         }
+        // variabile settata a true solo 1 volta
+       /*
         if (notifica) {
+            //metodo che setta le notifiche
             setUpNotification();
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("notifica", false);
         }
+        *
+        */
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -61,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setUpNotification() {
 
-        int ore = 12, minuti = 0;
+        int ore = 14, minuti = 58;
 
         SharedPreferences prefs = getSharedPreferences("sharedPrefs", Context.MODE_PRIVATE);
         String orario = prefs.getString("orario", " hh : mm ");
@@ -76,13 +83,16 @@ public class MainActivity extends AppCompatActivity {
         sceltaOrarioCalendario.set(Calendar.MINUTE, minuti);
         sceltaOrarioCalendario.set(Calendar.SECOND, 0);
 
-
+            // inizializzo l'intent passando il NotificationBrodcastReciver --> è la classe che crea e lancia le notifiche
             Intent intent = new Intent(this, NotificationBrodcastReciver.class);
             intent.setAction("MY_NOTIFICATION_MESSAGE");
+            // pending intent ---> intent per il futuro
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 100, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            // allarmManager chiama l'intent una volta al giorno e apre il NotificationBrodcastReciver
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, sceltaOrarioCalendario.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent); //
+        Toast.makeText(this, "lanciato brotcast" , Toast.LENGTH_SHORT).show();
 
     }
 
